@@ -32,7 +32,11 @@ export default {
     }
   },
   async created() {
-    await this.getUsers()
+    const users = this.$store.state.users
+
+    if (!users.length > 0) {
+      await this.getUsers()
+    }
   },
   methods: {
     ...mapActions(['getUsers'])

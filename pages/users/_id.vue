@@ -14,28 +14,38 @@
             <v-form v-if="edit">
               <v-list-tile>
                 <v-text-field
-                  v-model="user.name"
+                  v-model="name"
                   label="Name"
                   required
                 ></v-text-field>
               </v-list-tile>
               <v-list-tile>
                 <v-text-field
-                  v-model="user.email"
+                  v-model="email"
                   label="Email"
                   required
                 ></v-text-field>
               </v-list-tile>
               <v-list-tile>
                 <v-text-field
-                  v-model="user.company.name"
+                  v-model="companyName"
                   label="Company Name"
                   required
                 ></v-text-field>
               </v-list-tile>
 
               <v-list-tile>
-                <v-btn color="blue" @click="submit">submit</v-btn>
+                <v-btn
+                  color="blue"
+                  @click="
+                    updateUser({
+                      id: $route.params.id,
+                      user: { name: user.name }
+                    })
+                    submit()
+                  "
+                  >submit</v-btn
+                >
               </v-list-tile>
             </v-form>
           </v-list>
@@ -107,36 +117,68 @@
 </template>
 
 <script>
-import user from '~/apollo/queries/user'
-import updateUser from '~/apollo/mutations/updateUser'
+import { mapActions } from 'vuex'
 
 export default {
-  apollo: {
-    user: {
-      query: user,
-      prefetch: ({ route }) => ({ id: route.params.id }),
-      variables() {
-        return { id: this.$route.params.id }
-      }
-    }
-  },
   data: () => ({
     edit: false
   }),
+  computed: {
+    user() {
+      return this.$store.state.users.find(
+        ({ id }) => id === this.$route.params.id
+      )
+    },
+    name: {
+      get() {
+        return this.$store.state.users.find(
+          ({ id }) => id === this.$route.params.id
+        ).name
+      },
+      set(name) {
+        const users = this.$store.state.users
+        const index = users.findIndex(({ id }) => id === this.$route.params.id)
+        users[index] = { ...users[index], name }
+        this.$store.commit('updateUsers', users)
+      }
+    },
+    email: {
+      get() {
+        return this.$store.state.users.find(
+          ({ id }) => id === this.$route.params.id
+        ).email
+      },
+      set(email) {
+        const users = this.$store.state.users
+        const index = users.findIndex(({ id }) => id === this.$route.params.id)
+        users[index] = { ...users[index], email }
+        this.$store.commit('updateUsers', users)
+      }
+    },
+    companyName: {
+      get() {
+        return this.$store.state.users.find(
+          ({ id }) => id === this.$route.params.id
+        ).company.name
+      },
+      set(name) {
+        const users = this.$store.state.users
+        const index = users.findIndex(({ id }) => id === this.$route.params.id)
+        users[index] = { ...users[index], company: { name } }
+        this.$store.commit('updateUsers', users)
+      }
+    }
+  },
+  async created() {
+    const users = this.$store.state.users
+
+    if (!users.length > 0) {
+      await this.getUsers()
+    }
+  },
   methods: {
-    async submit() {
-      const { data } = await this.$apollo.mutate({
-        mutation: updateUser,
-        variables: {
-          id: this.user.id,
-          user: {
-            name: this.user.name,
-            email: this.user.email,
-            company: { name: this.user.company.name }
-          }
-        }
-      })
-      this.user = data.updateUser
+    ...mapActions(['getUsers', 'updateUser']),
+    submit() {
       this.edit = !this.edit
     }
   }
