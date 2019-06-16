@@ -11,7 +11,7 @@
             </v-btn>
           </v-toolbar>
           <v-list two-line>
-            <v-form v-if="edit" v-model="valid">
+            <v-form v-if="edit">
               <v-list-tile>
                 <v-text-field
                   v-model="user.name"
@@ -32,6 +32,10 @@
                   label="Company Name"
                   required
                 ></v-text-field>
+              </v-list-tile>
+
+              <v-list-tile>
+                <v-btn color="blue" @click="submit">submit</v-btn>
               </v-list-tile>
             </v-form>
           </v-list>
@@ -104,6 +108,7 @@
 
 <script>
 import user from '~/apollo/queries/user'
+import updateUser from '~/apollo/mutations/updateUser'
 
 export default {
   apollo: {
@@ -116,11 +121,24 @@ export default {
     }
   },
   data: () => ({
-    edit: false,
-    valid: false,
-    name: '',
-    email: '',
-    companyName: ''
-  })
+    edit: false
+  }),
+  methods: {
+    async submit() {
+      const { data } = await this.$apollo.mutate({
+        mutation: updateUser,
+        variables: {
+          id: this.user.id,
+          user: {
+            name: this.user.name,
+            email: this.user.email,
+            company: { name: this.user.company.name }
+          }
+        }
+      })
+      this.user = data.updateUser
+      this.edit = !this.edit
+    }
+  }
 }
 </script>
