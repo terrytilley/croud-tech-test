@@ -2,6 +2,10 @@
   <v-app dark>
     <v-toolbar :clipped-left="clipped" fixed app>
       <v-toolbar-title v-text="title" />
+      <v-spacer></v-spacer>
+      <v-toolbar-items class="hidden-sm-and-down">
+        <v-btn flat to="/">Users</v-btn>
+      </v-toolbar-items>
     </v-toolbar>
     <v-content>
       <v-container>
