@@ -41,7 +41,12 @@ export default {
   /*
    ** Nuxt.js modules
    */
-  modules: ['@nuxtjs/vuetify', '@nuxtjs/pwa', '@nuxtjs/eslint-module'],
+  modules: [
+    '@nuxtjs/vuetify',
+    '@nuxtjs/pwa',
+    '@nuxtjs/eslint-module',
+    '@nuxtjs/apollo'
+  ],
   /*
    ** vuetify module configuration
    ** https://github.com/nuxt-community/vuetify-module
@@ -55,6 +60,28 @@ export default {
       warning: colors.amber.base,
       error: colors.deepOrange.accent4,
       success: colors.green.accent3
+    }
+  },
+  /*
+   ** Apollo config
+   */
+  apollo: {
+    defaultOptions: {
+      $query: {
+        loadingKey: 'loading',
+        fetchPolicy: 'cache-and-network'
+      }
+    },
+    clientConfigs: {
+      default: {
+        httpEndpoint: 'https://rob5r.sse.codesandbox.io/',
+        httpLinkOptions: {
+          credentials: 'same-origin'
+        },
+        wsEndpoint: null,
+        persisting: false,
+        websocketsOnly: false
+      }
     }
   },
   /*
