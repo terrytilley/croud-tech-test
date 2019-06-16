@@ -23,14 +23,19 @@
 </template>
 
 <script>
-import users from '~/apollo/queries/users'
+import { mapActions } from 'vuex'
 
 export default {
-  apollo: {
-    users: {
-      prefetch: true,
-      query: users
+  computed: {
+    users() {
+      return this.$store.state.users
     }
+  },
+  async created() {
+    await this.getUsers()
+  },
+  methods: {
+    ...mapActions(['getUsers'])
   }
 }
 </script>
